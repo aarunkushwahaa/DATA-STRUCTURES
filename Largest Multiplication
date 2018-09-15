@@ -1,0 +1,125 @@
+import java.util.Scanner;
+
+public class LargestMultiplication {
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+
+		// first number
+		String firstNumber = scanner.nextLine();
+
+		// second number
+		String secondNumber = scanner.nextLine();
+
+		// set larger number as first number and smaller as second number
+		if (firstNumber.length() < secondNumber.length()) {
+			String temp = secondNumber;
+			secondNumber = firstNumber;
+			firstNumber = temp;
+		}
+
+		int l1 = firstNumber.length(), l2 = secondNumber.length();
+
+		// String Array to hold multiplication results by each digit of smaller
+		// number
+		// eg. 125
+		// *25
+		// --------------
+		// 625 <--stringArray[2]
+		// +250 <--stringArray[1] NOTE:-shift of digits... 250 shifted by 1
+		// place left
+		// --------------
+		// 3125 <--stringArray[0]
+		String[] stringArray = new String[1 + l2];
+
+		// set StringBuilder of length l1+l2 with each char as 0
+		StringBuilder sb = new StringBuilder("");
+		for (int i = 0; i < l1 + l2; i++) {
+
+			sb.append('0');
+		}
+
+		// string equal to StringBuilder
+		String s = sb.toString();
+
+		// set each string of stringArray equal to s
+		for (int i = 0; i < stringArray.length; i++) {
+
+			stringArray[i] = s;
+		}
+		int carry = 0;
+
+		// number of position to be shifted during each step of multiplication
+		int place = 0;
+
+		for (int i = l2; i > 0; i--) {
+
+			// StringBuilder to hold each string of stringArray
+			StringBuilder builder = new StringBuilder(stringArray[i]);
+
+			int j;
+			for (j = 0; j < l1; j++) {
+
+				// Picking each digit from last to first digits of first number
+				int a = Character.getNumericValue(firstNumber.charAt(l1 - j - 1));
+
+				// Picking each digit from last to first digits of second number
+				int b = Character.getNumericValue(secondNumber.charAt(i - 1));
+
+				// multiplying those digits and adding carry to them
+				int x = a * b + carry;
+
+				// calculate carry over
+				carry = x / 10;
+
+				// setting the char's of stringArray from last to first and left
+				// shifting each array
+				builder.setCharAt(stringArray[i].length() - j - 1 - place, (char) (x % 10 + '0'));
+
+				// re-storing builder as each string of stringArray
+				stringArray[i] = builder.toString();
+
+			}
+
+			// left shift count
+			place++;
+
+		}
+
+		// ADDITION OF each string of StringArray results
+
+		int carry2 = 0;
+
+		// length of each string in stringArray=l1+l2
+		int length = stringArray[0].length();
+
+		for (int i = 0; i < length; i++) {
+
+			// stringBuilder to hold result i.e. stringArray[0]
+			StringBuilder builder = new StringBuilder(stringArray[0]);
+			int sum = 0;
+			int j;
+			for (j = 0; j < l2; j++) {
+
+				// Addition of ith digits of all strings of stringArray
+				sum = sum + Character.getNumericValue(stringArray[j + 1].charAt(length - i - 1));
+
+			}
+
+			sum = sum + carry2;
+
+			carry2 = sum / 10;
+
+			// replacing char at required position of stringArray[0]
+			builder.setCharAt(length - i - 1, (char) (sum % 10 + '0'));
+
+			// re-storing builder as string to hold final result of
+			// multiplication
+			stringArray[0] = builder.toString();
+
+		}
+
+		// removing leading zeroes of stringArray[0]
+		System.out.println(stringArray[0].replaceFirst("^0+(?!$)", ""));
+
+	}
+}
